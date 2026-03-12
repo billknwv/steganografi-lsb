@@ -5,7 +5,7 @@ import io
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(page_title="LSB Stealth", layout="wide")
 
-# --- CUSTOM CSS: SKY BLUE MINIMALIST ---
+# ---  CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
