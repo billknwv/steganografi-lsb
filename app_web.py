@@ -3,109 +3,281 @@ from PIL import Image
 import io
 
 # --- KONFIGURASI HALAMAN ---
-st.set_page_config(page_title="LSB Stealth", page_icon="🕵️", layout="wide")
+st.set_page_config(page_title="LSB Stealth", layout="wide")
 
-# --- CUSTOM CSS: CYBER STEALH UI ---
+# --- CUSTOM CSS: SKY BLUE MINIMALIST ---
 st.markdown("""
     <style>
-    /* Import Font Modern & Tech */
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
 
-    /* Background Utama Gelap Total */
-    .stApp {
-        background-color: #05070a;
-        font-family: 'Space Grotesk', sans-serif;
-        color: #e0e0e0;
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body, .stApp {
+        background-color: #f0f8ff;
+        font-family: 'DM Sans', sans-serif;
+        color: #1a2e44;
     }
 
-    /* Hilangkan Header Default Streamlit */
-    header {visibility: hidden;}
-    
-    /* Main Container / Panel Kaca */
-    .glass-panel {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 30px;
-        padding: 40px;
-        margin-top: -50px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    header, footer { visibility: hidden !important; }
+    #MainMenu { visibility: hidden !important; }
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 900px !important;
     }
 
-    /* Judul Stealth */
-    .main-title {
-        font-weight: 700;
-        font-size: 3.5rem;
-        letter-spacing: -2px;
-        background: linear-gradient(90deg, #00f2ff, #0072ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        margin-bottom: 5px;
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: -200px; right: -200px;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(56, 182, 255, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
     }
 
-    /* Tombol Bergaya Modern */
-    .stButton>button {
-        width: 100%;
-        background: #00f2ff;
-        color: #000 !important;
-        border: none;
-        padding: 15px;
-        border-radius: 12px;
-        font-weight: 700;
+    .stApp::after {
+        content: '';
+        position: fixed;
+        bottom: -150px; left: -150px;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: rgba(14, 165, 233, 0.1);
+        border: 1px solid rgba(14, 165, 233, 0.25);
+        color: #0284c7;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 3px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: 0.4s;
+        padding: 6px 18px;
+        border-radius: 100px;
+        margin-bottom: 20px;
     }
 
-    .stButton>button:hover {
+    .main-title {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 3.8rem;
+        line-height: 1.05;
+        letter-spacing: -2px;
+        color: #0c1d2e;
+        margin-bottom: 12px;
+    }
+
+    .main-title span { color: #0ea5e9; }
+
+    .subtitle {
+        font-size: 1rem;
+        color: #5a7a99;
+        font-weight: 400;
+        margin-bottom: 50px;
+    }
+
+    .card {
         background: #ffffff;
-        box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
-        transform: translateY(-3px);
+        border: 1px solid rgba(14, 165, 233, 0.15);
+        border-radius: 24px;
+        padding: 40px 44px;
+        box-shadow: 0 4px 40px rgba(14, 165, 233, 0.07), 0 1px 3px rgba(0,0,0,0.04);
+        position: relative;
+        overflow: hidden;
     }
 
-    /* Style Input & Text Area */
-    .stTextArea textarea, .stFileUploader section {
-        background-color: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 15px !important;
-        color: white !important;
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #38bdf8, #0ea5e9, #0284c7);
+        border-radius: 24px 24px 0 0;
     }
 
-    /* Styling Tab agar tidak kaku */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 20px;
-        justify-content: center;
-        background-color: transparent;
+        background: #f0f8ff !important;
+        border-radius: 14px !important;
+        padding: 5px !important;
+        gap: 4px !important;
+        border: 1px solid rgba(14, 165, 233, 0.15) !important;
+        width: fit-content !important;
+        margin: 0 auto 32px !important;
     }
+
     .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        background-color: rgba(255,255,255,0.05);
-        border-radius: 10px;
-        color: #888;
-        border: none;
-        padding: 0 30px;
+        background: transparent !important;
+        border-radius: 10px !important;
+        color: #5a7a99 !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 0.88rem !important;
+        letter-spacing: 0.5px !important;
+        padding: 10px 28px !important;
+        border: none !important;
+        height: auto !important;
     }
+
     .stTabs [aria-selected="true"] {
-        background-color: #00f2ff !important;
-        color: #000 !important;
+        background: #0ea5e9 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 12px rgba(14, 165, 233, 0.3) !important;
+    }
+
+    .stTabs [data-baseweb="tab-highlight"] { display: none !important; }
+
+    .stFileUploader section {
+        background: #f7fbff !important;
+        border: 2px dashed rgba(14, 165, 233, 0.3) !important;
+        border-radius: 16px !important;
+        padding: 24px !important;
+    }
+
+    .stFileUploader section:hover {
+        border-color: #0ea5e9 !important;
+    }
+
+    .stFileUploader section p, .stFileUploader section span {
+        color: #5a7a99 !important;
+        font-family: 'DM Sans', sans-serif !important;
+    }
+
+    .stTextArea textarea {
+        background: #f7fbff !important;
+        border: 1.5px solid rgba(14, 165, 233, 0.2) !important;
+        border-radius: 14px !important;
+        color: #1a2e44 !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 0.95rem !important;
+        padding: 14px 18px !important;
+    }
+
+    .stTextArea textarea:focus {
+        border-color: #0ea5e9 !important;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+    }
+
+    .stTextArea textarea::placeholder { color: #9db8cc !important; }
+
+    .stTextArea label, .stFileUploader label {
+        color: #2d4a63 !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        letter-spacing: 0.5px !important;
+        text-transform: uppercase !important;
+    }
+
+    .stButton > button {
+        width: 100% !important;
+        background: #0ea5e9 !important;
+        color: #ffffff !important;
+        border: none !important;
+        padding: 14px 28px !important;
+        border-radius: 12px !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        letter-spacing: 1.5px !important;
+        text-transform: uppercase !important;
+        box-shadow: 0 2px 16px rgba(14, 165, 233, 0.25) !important;
+        margin-top: 8px !important;
+        transition: all 0.25s ease !important;
+    }
+
+    .stButton > button:hover {
+        background: #0284c7 !important;
+        box-shadow: 0 6px 24px rgba(14, 165, 233, 0.4) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    .stDownloadButton > button {
+        width: 100% !important;
+        background: transparent !important;
+        color: #0ea5e9 !important;
+        border: 1.5px solid #0ea5e9 !important;
+        padding: 13px 28px !important;
+        border-radius: 12px !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        letter-spacing: 1.5px !important;
+        text-transform: uppercase !important;
+        margin-top: 6px !important;
+        transition: all 0.25s ease !important;
+    }
+
+    .stDownloadButton > button:hover {
+        background: #0ea5e9 !important;
+        color: #ffffff !important;
+    }
+
+    .stSuccess {
+        background: rgba(16, 185, 129, 0.08) !important;
+        border: 1px solid rgba(16, 185, 129, 0.25) !important;
+        border-radius: 12px !important;
+    }
+
+    .stError {
+        background: rgba(239, 68, 68, 0.07) !important;
+        border: 1px solid rgba(239, 68, 68, 0.2) !important;
+        border-radius: 12px !important;
+    }
+
+    .stInfo {
+        background: rgba(14, 165, 233, 0.07) !important;
+        border: 1px solid rgba(14, 165, 233, 0.2) !important;
+        border-radius: 12px !important;
+        color: #0c4a6e !important;
+    }
+
+    .stImage > img {
+        border-radius: 16px !important;
+        border: 1px solid rgba(14, 165, 233, 0.15) !important;
+        margin: 12px 0 !important;
+    }
+
+    .section-divider {
+        border: none;
+        border-top: 1px solid rgba(14, 165, 233, 0.1);
+        margin: 28px 0;
+    }
+
+    h3 {
+        font-family: 'Syne', sans-serif !important;
+        color: #0c1d2e !important;
+        font-size: 1.1rem !important;
+    }
+
+    .footer {
+        text-align: center;
+        color: #9db8cc;
+        font-size: 0.78rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 24px 0 8px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- LOGIKA ASLI (TETAP SAMA) ---
+# --- LOGIKA ---
 def text_to_bin(text):
     return ''.join(format(ord(i), '08b') for i in text)
 
 def encode_logic(img, secret_data):
-    binary_msg = text_to_bin(secret_data) + '1111111111111110' 
+    binary_msg = text_to_bin(secret_data) + '1111111111111110'
     data_index = 0
     img = img.convert('RGB')
     pixels = list(img.getdata())
     new_pixels = []
     for pixel in pixels:
         pixel = list(pixel)
-        for i in range(3): 
+        for i in range(3):
             if data_index < len(binary_msg):
                 pixel[i] = pixel[i] & ~1 | int(binary_msg[data_index])
                 data_index += 1
@@ -131,48 +303,48 @@ def decode_logic(img):
         message += chr(int(byte, 2))
     return message
 
-# --- UI CONTENT ---
-st.markdown('<h1 class="main-title">STEALTH LSB.</h1>', unsafe_allow_html=True)
-st.markdown('<p style="text-align:center; color:#666; margin-bottom:50px;">PROYEK KRIPTOGRAFI KELOMPOK 4</p>', unsafe_allow_html=True)
+# --- UI ---
+st.markdown("""
+    <div style="text-align: center; padding: 20px 0 40px;">
+        <div class="hero-badge">Kelompok 4 &nbsp;·&nbsp; Kriptografi</div>
+        <div class="main-title">LSB <span>Stealth</span></div>
+        <p class="subtitle">Sembunyikan pesan rahasia di dalam gambar menggunakan teknik Least Significant Bit</p>
+    </div>
+""", unsafe_allow_html=True)
 
-# Main Container
-_, center, _ = st.columns([1, 6, 1])
+_, center, _ = st.columns([1, 10, 1])
 
 with center:
-    st.markdown('<div class="glass-panel">', unsafe_allow_html=True)
-    
-    tab1, tab2 = st.tabs(["🔒 ENCODE", "🔓 DECODE"])
+    tab1, tab2 = st.tabs(["🔒  ENCODE", "🔓  DECODE"])
 
     with tab1:
-        st.write("##")
-        up_enc = st.file_uploader("Upload Image (PNG)", type=["png"], key="enc")
+        st.write("")
+        up_enc = st.file_uploader("Pilih gambar sumber", type=["png"], key="enc")
         if up_enc:
-            st.image(up_enc, caption="Source Image", use_container_width=True)
-            msg = st.text_area("Pesan Rahasia:", placeholder="Masukkan pesan rahasia di sini...")
-            
-            if st.button("PROCESS & HIDE"):
+            st.image(up_enc, caption="Pratinjau Gambar", use_container_width=True)
+            st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
+            msg = st.text_area("Pesan Rahasia", placeholder="Tulis pesan yang ingin disembunyikan...", height=120)
+            if st.button("PROSES & SEMBUNYIKAN"):
                 if msg:
-                    with st.spinner('Hiding data...'):
+                    with st.spinner('Menyembunyikan data ke dalam piksel...'):
                         res = encode_logic(Image.open(up_enc), msg)
                         buf = io.BytesIO()
                         res.save(buf, format="PNG")
-                        st.success("Data hidden successfully!")
-                        st.download_button("DOWNLOAD RESULT", buf.getvalue(), "stego.png")
+                        st.success("✓  Pesan berhasil disembunyikan dalam gambar.")
+                        st.download_button("↓  UNDUH HASIL", buf.getvalue(), "stego_output.png")
                 else:
-                    st.error("Isi pesan dulu!")
+                    st.error("Pesan tidak boleh kosong.")
 
     with tab2:
-        st.write("##")
-        up_dec = st.file_uploader("Upload Stego Image", type=["png"], key="dec")
+        st.write("")
+        up_dec = st.file_uploader("Unggah Stego Image", type=["png"], key="dec")
         if up_dec:
-            st.image(up_dec, use_container_width=True)
-            if st.button("EXTRACT MESSAGE"):
-                with st.spinner('Reading pixels...'):
+            st.image(up_dec, caption="Gambar yang Diunggah", use_container_width=True)
+            st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
+            if st.button("EKSTRAK PESAN"):
+                with st.spinner('Membaca piksel dan memulihkan pesan...'):
                     text = decode_logic(Image.open(up_dec))
-                    st.markdown("### 📩 Hasil Ekstraksi:")
-                    st.info(text if text else "Pesan tidak ditemukan.")
+                    st.markdown("### 📩 Pesan Tersembunyi")
+                    st.info(text if text else "Tidak ada pesan yang ditemukan dalam gambar ini.")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# Footer Minimalis
-st.markdown("<br><p style='text-align: center; color: #333;'>SECURE DATA HIDING SYSTEM</p>", unsafe_allow_html=True)
+st.markdown('<div class="footer">Secure Data Hiding System &nbsp;·&nbsp; LSB Steganography</div>', unsafe_allow_html=True)
