@@ -319,7 +319,7 @@ with center:
 
     with tab1:
         st.write("")
-        up_enc = st.file_uploader("Pilih gambar sumber", type=["png"], key="enc")
+        up_enc = st.file_uploader("Pilih gambar sumber", type=["png","jpg","jpeg"], key="enc")
         if up_enc:
             st.image(up_enc, caption="Pratinjau Gambar", use_container_width=True)
             st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
@@ -337,7 +337,7 @@ with center:
 
     with tab2:
         st.write("")
-        up_dec = st.file_uploader("Unggah Stego Image", type=["png"], key="dec")
+        up_dec = st.file_uploader("Unggah Stego Image", type=["png","jpg","jpeg"], key="dec")
         if up_dec:
             st.image(up_dec, caption="Gambar yang Diunggah", use_container_width=True)
             st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
